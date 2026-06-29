@@ -29,7 +29,7 @@
       ]
     ],
     "extra": {
-      "apiUrl": "http://localhost:5001/api",
+      "apiUrl": "https://briefnews-api.onrender.com/api",
       "googleWebClientId": "YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com",
       "googleAndroidClientId": "YOUR_GOOGLE_ANDROID_CLIENT_ID.apps.googleusercontent.com",
       "googleIosClientId": "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com"
