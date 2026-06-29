@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
 const authRoutes = require('./routes/authRoutes');
@@ -12,7 +11,6 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 app.set('etag', false);
-connectDB();
 
 app.use(helmet());
 app.use(cors({
