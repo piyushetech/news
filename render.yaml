@@ -1,0 +1,112 @@
+# BriefNews — free-tier deploy on Render.com
+# 1) Create free MongoDB Atlas cluster → paste URI into MONGODB_URI when prompted
+# 2) Connect this repo (root = project root; no monorepo subfolder needed)
+# 3) Apply blueprint → fill secret env vars → run seed once on the API service shell:
+#    node src/seedAdmin.js
+#
+# Docs: docs/DEPLOY_FREE.md
+
+services:
+  - type: web
+    name: briefnews-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: ADMIN_EMAIL
+        value: admin@briefnews.app
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: PYTHON_SERVICE_ENABLED
+        value: "true"
+      - key: PYTHON_INTERNAL_KEY
+        generateValue: true
+      - key: PYTHON_SERVICE_URL
+        fromService:
+          type: web
+          name: briefnews-python
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: PYTHON_TIMEOUT_MS
+        value: "120000"
+      - key: CRON_ENABLED
+        value: "true"
+      - key: CRON_SCHEDULE
+        value: "0 * * * *"
+      - key: WEB_URL
+        fromService:
+          type: web
+          name: briefnews-web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: ADMIN_URL
+        fromService:
+          type: web
+          name: briefnews-admin
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: ALLOWED_ORIGINS
+        sync: false
+
+  - type: web
+    name: briefnews-python
+    runtime: python
+    rootDir: python-service
+    plan: free
+    buildCommand: pip install -r requirements-deploy.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: MONGODB_URI
+        sync: false
+      - key: INTERNAL_API_KEY
+        fromService:
+          type: web
+          name: briefnews-api
+          envVarKey: PYTHON_INTERNAL_KEY
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: RESPECT_ROBOTS_TXT
+        value: "true"
+
+  - type: web
+    name: briefnews-web
+    runtime: static
+    rootDir: web
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: briefnews-api
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+
+  - type: web
+    name: briefnews-admin
+    runtime: static
+    rootDir: admin
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: briefnews-api
+          envVarKey: RENDER_EXTERNAL_URL

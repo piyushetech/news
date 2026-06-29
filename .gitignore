@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# Build output (rebuilt in CI/deploy)
+dist/
+build/
+.expo/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+
+# Mobile
+mobile/.expo/
+mobile/android/
+mobile/ios/

@@ -1,0 +1,64 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  python-service:
+    build: ../python-service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../python-service/.env.example
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/inshort
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+    depends_on:
+      - mongo
+      - redis
+
+  celery-worker:
+    build: ../python-service
+    command: celery -A workers.celery_app worker -Q scrape,ai -l info
+    env_file:
+      - ../python-service/.env.example
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/inshort
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+    depends_on:
+      - redis
+      - python-service
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/inshort
+      PYTHON_SERVICE_ENABLED: "true"
+      PYTHON_SERVICE_URL: http://python-service:8000
+      PYTHON_INTERNAL_KEY: change-me-internal-key
+    depends_on:
+      - mongo
+      - redis
+      - python-service
+
+volumes:
+  mongo_data:

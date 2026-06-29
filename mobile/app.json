@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "BriefNews",
+    "slug": "briefnews",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#ff7a1a"
+    },
+    "ios": {
+      "bundleIdentifier": "com.briefnews.news",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "BriefNews uses your location to show neighborhood news within 5–10 km."
+      }
+    },
+    "android": {
+      "package": "com.briefnews.news",
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"]
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-notifications",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "BriefNews uses your location to show news from your city."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:5001/api",
+      "googleWebClientId": "YOUR_GOOGLE_WEB_CLIENT_ID.apps.googleusercontent.com",
+      "googleAndroidClientId": "YOUR_GOOGLE_ANDROID_CLIENT_ID.apps.googleusercontent.com",
+      "googleIosClientId": "YOUR_GOOGLE_IOS_CLIENT_ID.apps.googleusercontent.com"
+    }
+  }
+}
