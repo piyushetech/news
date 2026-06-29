@@ -6,6 +6,12 @@
 #
 # Docs: docs/DEPLOY_FREE.md
 
+envVarGroups:
+  - name: briefnews-shared
+    envVars:
+      - key: PYTHON_INTERNAL_KEY
+        generateValue: true
+
 services:
   - type: web
     name: briefnews-api
@@ -32,8 +38,7 @@ services:
         generateValue: true
       - key: PYTHON_SERVICE_ENABLED
         value: "true"
-      - key: PYTHON_INTERNAL_KEY
-        generateValue: true
+      - fromGroup: briefnews-shared
       - key: PYTHON_SERVICE_URL
         fromService:
           type: web
@@ -68,14 +73,10 @@ services:
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
-        value: "3.12.8"
+        value: "3.12.0"
       - key: MONGODB_URI
         sync: false
-      - key: INTERNAL_API_KEY
-        fromService:
-          type: web
-          name: briefnews-api
-          envVarKey: PYTHON_INTERNAL_KEY
+      - fromGroup: briefnews-shared
       - key: OPENAI_API_KEY
         sync: false
       - key: OPENAI_MODEL

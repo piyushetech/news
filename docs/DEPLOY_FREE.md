@@ -96,5 +96,6 @@ curl https://YOUR-PYTHON.onrender.com/health
 |-------|-----|
 | CORS error | Check `WEB_URL` / `ADMIN_URL` on API; add origin to `ALLOWED_ORIGINS` |
 | Empty feed | Run seed; approve stories in admin |
-| Python build fails | Uses `requirements-deploy.txt`, not full `requirements.txt` |
+| Python build fails | Uses `requirements-deploy.txt` (not full `requirements.txt`). If pip errors on `motor`/`pymongo`, ensure `motor>=3.7` with `pymongo>=4.10`. |
+| Blueprint partially failed | Delete failed services in Render → re-apply blueprint from latest `main` |
 | Google login fails | Match client ID and authorized origins |

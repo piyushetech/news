@@ -1,3 +1,4 @@
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,7 +10,10 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    internal_api_key: str = "change-me-internal-key"
+    internal_api_key: str = Field(
+        default="change-me-internal-key",
+        validation_alias=AliasChoices("INTERNAL_API_KEY", "PYTHON_INTERNAL_KEY"),
+    )
     mongodb_uri: str = "mongodb://localhost:27017/inshort"
     redis_url: str = "redis://localhost:6379/0"
     celery_broker_url: str = "redis://localhost:6379/1"
